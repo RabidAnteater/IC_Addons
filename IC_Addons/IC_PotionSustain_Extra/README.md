@@ -26,6 +26,10 @@ It runs on a similar process that Sustaining Smalls does. When a potion type fal
 
 The interface will tell you which Alternating combination it's currently using.
 
+The `Prefer single potions over s+? combos to maximise Gold chests?` option will continue to use the `Anything available` sustain bracket, even if it is possible to sustain smalls. This is useful when you want to maximise gold chests, for example when farming for Bounty Contracts.
+
+*Note: This setting will reduce the overall BPH, but increase BCs per hour, particularly when only just able to sustain smalls.*
+
 *Please be aware that it can only change the potions in the modron during offline stacking - so this will not work at all for purely online runs.*
 
 ### Sustain Brackets
@@ -59,7 +63,7 @@ z655 (or z475 with Gem Hunter) can permanently sustain small potions.
 
 #### Anything available.
 
-Below z655 (or z475 with Gem Hunter) you can't permanently sustain any potion. Because of this it will use 1 potion at a time and alternate all 4 types.
+Below z655 (or z475 with Gem Hunter) you can't permanently sustain any potion. Because of this it will use 1 potion at a time and alternate all 4 types. This bracket is also used when preferring singles to maximise Gold Chests.
 
 | Alternatives | Uptime | Speed<br>No Shandie | Speed<br>Shandie |
 |---|--:|--:|--:|
