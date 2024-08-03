@@ -35,7 +35,7 @@ Gui, ICScriptHub:Add, Text, xs20 y+15 w130 +Right, Can Sustain Smalls:
 Gui, ICScriptHub:Add, Text, vg_PS_AbleSustainSmallStatus xs160 y+-13 w300, Unknown
 Gui, ICScriptHub:Add, Text, xs20 y+10 w130 +Right, Currently Buying Silvers:
 Gui, ICScriptHub:Add, Text, vg_PS_BuyingSilversStatus xs160 y+-13 w200, Unknown
-Gui, ICScriptHub:Add, GroupBox, x15 ys120 Section w500 h205, Automate Modron Potions
+Gui, ICScriptHub:Add, GroupBox, x15 ys120 Section w500 h225, Automate Modron Potions
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_EnableAlternating xs15 ys25, Enable automating potions in the modron?
 Gui, ICScriptHub:Add, Text, xs165 y+10 w50, Minimum
 Gui, ICScriptHub:Add, Text, xs235 y+-13 w50, Maximum
@@ -52,11 +52,12 @@ Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableSmalls xs15 y+15, Disable 
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableMediums xs245 y+-13, Disable the use of Medium potions?
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableLarges xs15 y+15, Disable the use of Large potions?
 Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_DisableHuges xs245 y+-13, Disable the use of Huge potions?
+Gui, ICScriptHub:Add, Checkbox, vg_PS_Checkbox_AlternateMedium xs15 y+10, Use Medium sustain logic when Mediums above Small potion threshold?
 GUIFunctions.UseThemeTextColor("TableTextColor")
 Gui, ICScriptHub:Add, ListView, xs300 ys15 w190 h100 vg_PS_AutomateList, Priority|Alternating|Status
 GUIFunctions.UseThemeListViewBackgroundColor("g_PS_AutomateList")
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
-Gui, ICScriptHub:Add, GroupBox, x15 ys210 Section w500 h140, Current Potion Amounts
+Gui, ICScriptHub:Add, GroupBox, x15 ys230 Section w500 h140, Current Potion Amounts
 Gui, ICScriptHub:Add, Text, xs20 ys+20 w130 +Right, Smalls:
 Gui, ICScriptHub:Add, Text, vg_PS_SmallPotCountStatus xs160 y+-13 w60 +Right, Unknown
 Gui, ICScriptHub:Add, Text, vg_PS_SmallPotWaxingStatus xs240 y+-13 w240, Unknown
@@ -112,9 +113,10 @@ Class IC_PotionSustain_Component
 	AutomatePotMinThresh := 50
 	AutomatePotMaxThresh := 500
 	ChestSmallPotBuying := false
-	MediumOverStock := false
 	SustainSmallAbility := "Unknown"
 	EnableAlternating := false
+	AlternateMedium := false
+	MediumOverStock := false
 	WaxingPots := {"s":false,"m":false,"l":false,"h":false}
 	Using := "Using"
 	NotEnough := "Not Enough"
@@ -192,6 +194,7 @@ Class IC_PotionSustain_Component
 		GuiControl, ICScriptHub:, g_PS_AutomateThreshMin, % this.Settings["AutomateThreshMin"]
 		GuiControl, ICScriptHub:, g_PS_AutomateThreshMax, % this.Settings["AutomateThreshMax"]
 		GuiControl, ICScriptHub:, g_PS_Checkbox_EnableAlternating, % this.Settings["Alternate"]
+		GuiControl, ICScriptHub:, g_PS_Checkbox_AlternateMedium, % this.Settings["AlternateMedium"]
 		GuiControl, ICScriptHub:, g_PS_Checkbox_DisableSmalls, % this.Settings["DisableSmalls"]
 		GuiControl, ICScriptHub:, g_PS_Checkbox_DisableMediums, % this.Settings["DisableMediums"]
 		GuiControl, ICScriptHub:, g_PS_Checkbox_DisableLarges, % this.Settings["DisableLarges"]
@@ -201,6 +204,7 @@ Class IC_PotionSustain_Component
 		this.AutomatePotMinThresh := this.Settings["AutomateThreshMin"]
 		this.AutomatePotMaxThresh := this.Settings["AutomateThreshMax"]
 		this.EnableAlternating := this.Settings["Alternate"]
+		this.AlternateMedium := this.Settings["AlternateMedium"]
 		this.DisableSmall := this.Settings["DisableSmalls"]
 		this.DisableMedium := this.Settings["DisableMediums"]
 		this.DisableLarge := this.Settings["DisableLarges"]
@@ -219,6 +223,7 @@ Class IC_PotionSustain_Component
 		this.Settings["AutomateThreshMin"] := g_PS_AutomateThreshMin
 		this.Settings["AutomateThreshMax"] := g_PS_AutomateThreshMax
 		this.Settings["Alternate"] := g_PS_Checkbox_EnableAlternating
+		this.Settings["AlternateMedium"] := g_PS_Checkbox_AlternateMedium
 		this.Settings["DisableSmalls"] := g_PS_Checkbox_DisableSmalls
 		this.Settings["DisableMediums"] := g_PS_Checkbox_DisableMediums
 		this.Settings["DisableLarges"] := g_PS_Checkbox_DisableLarges
@@ -228,6 +233,7 @@ Class IC_PotionSustain_Component
 		this.AutomatePotMinThresh := g_PS_AutomateThreshMin
 		this.AutomatePotMaxThresh := g_PS_AutomateThreshMax
 		this.EnableAlternating := g_PS_Checkbox_EnableAlternating
+		this.AlternateMedium := g_PS_Checkbox_AlternateMedium
 		this.DisableSmall := g_PS_Checkbox_DisableSmalls
 		this.DisableMedium := g_PS_Checkbox_DisableMediums
 		this.DisableLarge := g_PS_Checkbox_DisableLarges
@@ -310,6 +316,7 @@ Class IC_PotionSustain_Component
 		this.Settings["AutomateThreshMin"] := 100
 		this.Settings["AutomateThreshMax"] := 150
 		this.Settings["Alternate"] := false
+		this.Settings["AlternateMedium"] := false
 		this.Settings["DisableSmalls"] := false
 		this.Settings["DisableMediums"] := false
 		this.Settings["DisableLarges"] := false
@@ -584,8 +591,9 @@ Class IC_PotionSustain_Component
 		if (this.ModronResetZone >= lZone AND this.PotAmounts["l"] > this.AutomatePotMinThresh AND !this.DisableLarge)
 			calcAuto := this.CalculateSustainLarges()
 		; Sustaining mediums.
-		; Only use if modron reset is 1175+ (or 885+GH) and medium pots are above the minimum threshold and medium pots are not disabled.
-		else if ((this.ModronResetZone >= mZone OR this.MediumOverStock) AND this.PotAmounts["m"] > this.AutomatePotMinThresh AND !this.DisableMedium)
+		; Only use if modron reset is 1175+ (or 885+GH) and medium pots are above the minimum threshold and medium pots are not disabled, 
+		; or sustaining smalls and mediums are above small buy threshold and alternating to mediums.
+		else if ((this.ModronResetZone >= mZone OR (this.MediumOverStock AND this.AlternateMedium)) AND this.PotAmounts["m"] > this.AutomatePotMinThresh AND !this.DisableMedium)
 			calcAuto := this.CalculateSustainMediums()
 		; Sustaining smalls.
 		; Only use if modron reset is 655+ (or 475+GH) and small pots are above the minimum threshold and small pots are not disabled.

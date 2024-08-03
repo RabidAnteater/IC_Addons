@@ -24,6 +24,8 @@ The second section gives the option to have the AddOn change the potions in your
 
 It runs on a similar process that Sustaining Smalls does. When a potion type falls below the minimum threshold it can no longer be used and the addon will switch to a different combination. When that same potion type goes back above the maximum threshold it will be available for use again.
 
+When the modron reset zone is above the level to sustatin smalls, but below the level to fully sustain mediums, the will be a point where mediums accumulate faster than they are used if only sustaining smalls. The option `Use Medium sustain logic when Mediums above Small potion threshold` will switch to using medium+x combinations when the medium count goes above the Small Potion Threshold Maximum. It will switch back to small+x when the count falls below the Small Potion Threshold Minimum.
+
 The interface will tell you which Alternating combination it's currently using.
 
 *Please be aware that it can only change the potions in the modron during offline stacking - so this will not work at all for purely online runs.*
@@ -38,7 +40,7 @@ For the time being it's extremely simplistic - and might not be good for everyon
 
 #### Mediums + Others.
 
-z1175 (or z885 with Gem Hunter) can permanently sustain medium potions - if the script can buy Silvers occasionally to sustain smalls. (Which is why Sustain Smalls is not optional.)
+z1185 (or z895 with Gem Hunter) can permanently sustain medium potions - if the script can buy Silvers occasionally to sustain smalls. (Which is why Sustain Smalls is not optional.)
 
 | Alternatives | Uptime | Speed<br>No Shandie | Speed<br>Shandie |
 |---|--:|--:|--:|
@@ -48,7 +50,7 @@ z1175 (or z885 with Gem Hunter) can permanently sustain medium potions - if the 
 
 #### Smalls + Others.
 
-z655 (or z475 with Gem Hunter) can permanently sustain small potions.
+z665 (or z480 with Gem Hunter) can permanently sustain small potions.
 
 | Alternatives | Uptime | Speed<br>No Shandie | Speed<br>Shandie |
 |---|--:|--:|--:|
