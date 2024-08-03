@@ -112,6 +112,7 @@ Class IC_PotionSustain_Component
 	AutomatePotMinThresh := 50
 	AutomatePotMaxThresh := 500
 	ChestSmallPotBuying := false
+	MediumOverStock := false
 	SustainSmallAbility := "Unknown"
 	EnableAlternating := false
 	WaxingPots := {"s":false,"m":false,"l":false,"h":false}
@@ -346,6 +347,11 @@ Class IC_PotionSustain_Component
 				this.ChestSmallPotBuying := true
 			else if (this.PotAmounts["s"] >= this.ChestSmallPotMaxThresh)
 				this.ChestSmallPotBuying := false
+
+			if (this.PotAmounts["m"] >= 0 AND this.PotAmounts["m"] <= this.ChestSmallPotMinThresh AND this.ChestSmallPotMinThresh >= 0)
+				this.MediumOverStock := false
+			else if (this.PotAmounts["m"] >= this.ChestSmallPotMaxThresh)
+				this.MediumOverStock := true
 			
 			if (this.EnableAlternating)
 			{
@@ -579,7 +585,7 @@ Class IC_PotionSustain_Component
 			calcAuto := this.CalculateSustainLarges()
 		; Sustaining mediums.
 		; Only use if modron reset is 1175+ (or 885+GH) and medium pots are above the minimum threshold and medium pots are not disabled.
-		else if (this.ModronResetZone >= mZone AND this.PotAmounts["m"] > this.AutomatePotMinThresh AND !this.DisableMedium)
+		else if ((this.ModronResetZone >= mZone OR this.MediumOverStock) AND this.PotAmounts["m"] > this.AutomatePotMinThresh AND !this.DisableMedium)
 			calcAuto := this.CalculateSustainMediums()
 		; Sustaining smalls.
 		; Only use if modron reset is 655+ (or 475+GH) and small pots are above the minimum threshold and small pots are not disabled.
